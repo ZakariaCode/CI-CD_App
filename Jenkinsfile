@@ -12,11 +12,13 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/ZakariaCode/CI-CD_App.git'
             }
         }
+
         stage('Test Docker') {
             steps {
                 sh '/usr/local/bin/docker --version'
             }
         }
+
         stage('Build Docker Image') {
             steps {
                 sh '''
@@ -29,25 +31,42 @@ pipeline {
 
         stage('Test Docker Image') {
             steps {
-                sh '/usr/local/bin/docker run -d -p 8081:81 --name test-container $DOCKER_IMAGE:$DOCKER_TAG'
-                sh 'sleep 5'  // Attendre que le conteneur démarre
-                sh 'curl -I http://localhost:8081'
+                script {
+                    // Vérifier et supprimer le conteneur existant
+                    sh '''
+                        if /usr/local/bin/docker ps -a --format '{{.Names}}' | grep -w test-container; then
+                            /usr/local/bin/docker stop test-container || true
+                            /usr/local/bin/docker rm test-container || true
+                        fi
+                    '''
+
+                    // Lancer un nouveau conteneur
+                    sh '''
+                        /usr/local/bin/docker run -d -p 8081:81 --name test-container $DOCKER_IMAGE:$DOCKER_TAG
+                        sleep 5  # Attendre que le conteneur démarre
+                        curl -I http://localhost:8081
+                    '''
+                }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASS')]) {
-                    sh 'echo $DOCKER_PASS | /usr/local/bin/docker login -u zakaria631 --password-stdin'
-                    sh '/usr/local/bin/docker push $DOCKER_IMAGE:$DOCKER_TAG'
+                    sh '''
+                        echo $DOCKER_PASS | /usr/local/bin/docker login -u zakaria631 --password-stdin
+                        /usr/local/bin/docker push $DOCKER_IMAGE:$DOCKER_TAG
+                    '''
                 }
             }
         }
 
         stage('Cleanup') {
             steps {
-                sh '/usr/local/bin/docker stop test-container || true'
-                sh '/usr/local/bin/docker rm test-container || true'
+                sh '''
+                    /usr/local/bin/docker stop test-container || true
+                    /usr/local/bin/docker rm test-container || true
+                '''
             }
         }
     }
