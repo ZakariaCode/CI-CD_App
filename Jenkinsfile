@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Cloner le projet') {
             steps {
-                git 'https://github.com/ZakariaCode/CI-CD_App.git'
+                git branch: 'main', url: 'https://github.com/ZakariaCode/CI-CD_App.git'
+
             }
         }
 
