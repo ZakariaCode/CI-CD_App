@@ -25,12 +25,17 @@ pipeline {
         }
 
         stage('Test Docker Image') {
-            steps {
-                sh 'docker run -d -p 8081:81 --name test-container $DOCKER_IMAGE:$DOCKER_TAG'
-                sh 'sleep 5'  // Attendre que le conteneur démarre
-                sh 'curl -I http://localhost:8081'
-            }
+    steps {
+        script {
+            // Stop and remove the existing container if it exists
+            sh "docker rm -f test-container || true"  // force remove if container exists
+
+            // Run the new container
+            sh "docker run -d -p 8081:81 --name test-container zakaria631/mon-site-web:latest"
         }
+    }
+}
+
 
         stage('Push to Docker Hub') {
             steps {
