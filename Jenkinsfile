@@ -29,26 +29,35 @@ pipeline {
             }
         }
 
-        stage('Test Docker Image') {
-            steps {
-                script {
-                    // Vérifier et supprimer le conteneur existant
-                    sh '''
-                        if /usr/local/bin/docker ps -a --format '{{.Names}}' | grep -w test-container; then
-                            /usr/local/bin/docker stop test-container || true
-                            /usr/local/bin/docker rm test-container || true
-                        fi
-                    '''
+       stage('Test Docker Image') {
+    steps {
+        script {
+            // Vérifier et supprimer l'ancien conteneur
+            sh '''
+                if /usr/local/bin/docker ps -a --format '{{.Names}}' | grep -w test-container; then
+                    /usr/local/bin/docker stop test-container || true
+                    /usr/local/bin/docker rm test-container || true
+                fi
+            '''
 
-                    // Lancer un nouveau conteneur
-                    sh '''
-                        /usr/local/bin/docker run -d -p 8081:81 --name test-container $DOCKER_IMAGE:$DOCKER_TAG
-                        sleep 5  # Attendre que le conteneur démarre
-                        curl -I http://localhost:8081
-                    '''
-                }
-            }
+            // Démarrer un nouveau conteneur avec le bon port
+            sh '''
+                /usr/local/bin/docker run -d -p 8081:80 --name test-container $DOCKER_IMAGE:$DOCKER_TAG
+                sleep 10  # Augmenter le temps d'attente
+            '''
+
+            // Vérifier si le conteneur tourne
+            sh '/usr/local/bin/docker ps -a'
+
+            // Vérifier si nginx tourne bien
+            sh '/usr/local/bin/docker exec test-container nginx -t || true'
+
+            // Tester l'accès au serveur
+            sh 'curl -I http://localhost:8081 || (echo "Curl failed!" && /usr/local/bin/docker logs test-container && exit 1)'
         }
+    }
+}
+
 
         stage('Push to Docker Hub') {
             steps {
