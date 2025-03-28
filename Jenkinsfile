@@ -40,8 +40,8 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'docker-hub-password', variable: 'DOCKER_PASS')]) {
-                    // Se connecter à Docker Hub avec l'ID du credentials pour le mot de passe
-                    sh 'echo $DOCKER_PASS | docker login -u ton_utilisateur --password-stdin'
+                    // Remplacer ton_utilisateur par ton nom d'utilisateur Docker Hub (par exemple zakaria631)
+                    sh 'echo $DOCKER_PASS | docker login -u zakaria631 --password-stdin'
                     sh 'docker push $DOCKER_IMAGE:$DOCKER_TAG'
                 }
             }
