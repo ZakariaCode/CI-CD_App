@@ -19,7 +19,11 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh '/usr/local/bin/docker build -t $DOCKER_IMAGE:$DOCKER_TAG .'
+                sh '''
+                    mkdir -p ~/.docker
+                    echo '{"credsStore":""}' > ~/.docker/config.json
+                    /usr/local/bin/docker build -t $DOCKER_IMAGE:$DOCKER_TAG .
+                '''
             }
         }
 
@@ -42,7 +46,8 @@ pipeline {
 
         stage('Cleanup') {
             steps {
-                sh '/usr/local/bin/docker stop test-container && /usr/local/bin/docker rm test-container'
+                sh '/usr/local/bin/docker stop test-container || true'
+                sh '/usr/local/bin/docker rm test-container || true'
             }
         }
     }
