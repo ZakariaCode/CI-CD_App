@@ -39,7 +39,7 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'my-docker-hub-password', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                withCredentials([usernamePassword(credentialsId: 'my-docker-hub-password', usernameVariable: 'Zakaria', passwordVariable: 'DOCKER_PASSWORD')]) {
     // Étapes de push Docker
     sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
     sh 'docker push zakaria631/mon-site-web:latest'
