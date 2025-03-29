@@ -39,11 +39,12 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'my-docker-hub-password', variable: 'DOCKER_PASS')]) {
-                    // Remplacer ton_utilisateur par ton nom d'utilisateur Docker Hub (par exemple zakaria631)
-                    sh 'echo $DOCKER_PASS | docker login -u zakaria631 --password-stdin'
-                    sh 'docker push $DOCKER_IMAGE:$DOCKER_TAG'
-                }
+                withCredentials([usernamePassword(credentialsId: 'my-docker-hub-password', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+    // Étapes de push Docker
+    sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+    sh 'docker push zakaria631/mon-site-web:latest'
+}
+
             }
         }
 
