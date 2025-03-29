@@ -25,7 +25,7 @@ pipeline {
             steps {
                 script {
                     sh "docker rm -f test-container || true"  // Force supprimer si le conteneur existe déjà
-                    sh "docker run -d -p 8081:81 --name test-container $DOCKER_IMAGE:$DOCKER_TAG"
+                    sh "docker run -d -p 8081:80 --name test-container $DOCKER_IMAGE:$DOCKER_TAG"
                 }
             }
         }
