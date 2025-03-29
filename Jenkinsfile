@@ -46,7 +46,7 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 // Authentification à Docker Hub avec les credentials Jenkins
-                withCredentials([usernamePassword(credentialsId: 'my-docker-hub-password', 
+                withCredentials([usernamePassword(credentialsId: 'Jenkins_pipeline', 
                                                    usernameVariable: 'DOCKER_USERNAME', 
                                                    passwordVariable: 'DOCKER_PASSWORD')]) {
                     // Effectuer un login Docker en mode non interactif
