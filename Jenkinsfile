@@ -39,7 +39,7 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'cfd2a167-03dc-4749-b257-6f63749d6f48', variable: 'ZakariaCode')]) {
+                withCredentials([string(credentialsId: 'my-docker-hub-password', variable: 'DOCKER_PASS')]) {
                     // Remplacer ton_utilisateur par ton nom d'utilisateur Docker Hub (par exemple zakaria631)
                     sh 'echo $DOCKER_PASS | docker login -u zakaria631 --password-stdin'
                     sh 'docker push $DOCKER_IMAGE:$DOCKER_TAG'
